@@ -11,7 +11,7 @@ npm -v
 ```
 
 ### 2. ดาวน์โหลดโปรเจกต์
-ดาวน์โหลดไฟล์โปรเจกต์ได้จาก [https://github.com/ZamPotter/tic-tac-toe-game.git](https://github.com/ZamPotter/tic-tac-toe-game/archive/refs/heads/main.zip) แตกไฟล์และเก็บไว้ในโฟลเดอร์ที่คุณต้องการ
+ดาวน์โหลดไฟล์โปรเจกต์ได้จาก [ดาวน์โหลดไฟล์](https://github.com/ZamPotter/tic-tac-toe-game/archive/refs/heads/main.zip) แตกไฟล์และเก็บไว้ในโฟลเดอร์ที่คุณต้องการ
 
 ### 3. ดาวน์โหลดไฟล์ .env.local
 ดาวน์โหลดไฟล์ .env.local จากไฟล์ที่แนบมาให้ในเมล
