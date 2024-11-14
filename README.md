@@ -14,23 +14,32 @@ npm -v
 ดาวน์โหลดไฟล์โปรเจกต์ได้จาก https://github.com/ZamPotter/tic-tac-toe-game.git
 แตกไฟล์และเก็บไว้ในโฟลเดอร์ที่คุณต้องการ
 
-First, run the development server:
+3. ดาวน์โหลดไฟล์ .env.local
+ดาวน์โหลดไฟล์ .env.local จากไฟล์ที่แนบมาให้ในเมล
+นำไฟล์ .env.local ไปวางในโฟลเดอร์รากของโปรเจกต์ (ในโฟลเดอร์เดียวกับที่มีไฟล์ package.json)
+
+โปรเจกต์ Next.js จะมีไฟล์ package.json ซึ่งระบุ dependencies ต่างๆ ที่จำเป็นต้องติดตั้งเพื่อให้โปรเจกต์ทำงานได้
+
+ให้เปิดเทอร์มินัลหรือ Command Prompt แล้วเข้าไปในโฟลเดอร์โปรเจกต์ จากนั้นติดตั้ง dependencies ด้วยคำสั่ง:
+
+```bash
+npm install
+```
+คำสั่งนี้จะติดตั้งแพ็กเกจทั้งหมดที่ระบุในไฟล์ package.json เช่น React, Next.js, และอื่นๆ ที่โปรเจกต์ต้องการ
+
+5. รันโปรเจกต์ในโหมดพัฒนา (Development Mode)
+เมื่อทุกอย่างพร้อมแล้ว คุณสามารถเริ่มเซิร์ฟเวอร์พัฒนา (development server) โดยใช้คำสั่งนี้:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+คำสั่งนี้จะเริ่มเซิร์ฟเวอร์ Next.js ที่พอร์ต 3000 (ตามค่าเริ่มต้น) และสามารถเข้าถึงโปรเจกต์ได้ที่ http://localhost:3000 ในเว็บเบราว์เซอร์
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+ปล. โปรเจ็กต์นี้ใช้
+node v22.11.0
+next v15.0.3
+nextjs-auth0 v3.5.0
 
 ## Learn More
 
