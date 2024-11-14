@@ -1,6 +1,7 @@
 // components/Game.tsx
 'use client'
 import React, { useState, useEffect } from 'react';
+import '@/components/Game.scss';
 import Board from '@/components/Board';
 
 const calculateWinner = (squares: string[]): string | null => {
@@ -83,6 +84,7 @@ const Game: React.FC = () => {
     if (emptySquares.length === 0) return; // Don't make move if no empty squares left
 
     let bestMove: number;
+    console.log(difficulty);
     switch (difficulty) {
       case 'easy':
         bestMove = easyAiMove(emptySquares);
@@ -174,12 +176,11 @@ const Game: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       {!isGameStarted ? (
         <div>
-          <h1>Welcome to Tic-Tac-Toe</h1>
-          <div>
-            <h3>Select Difficulty</h3>
+          <h2 className="title">Welcome to Tic-Tac-Toe</h2>
+          <div className="difficultySelection">
             <label>
               <input
                 type="radio"
@@ -208,18 +209,20 @@ const Game: React.FC = () => {
               /> Hard
             </label>
           </div>
-          <button onClick={() => handleStartGame(difficulty)}>Start Game</button>
+          <button className="startButton" onClick={() => handleStartGame(difficulty)}>Start Game</button>
         </div>
       ) : (
         <div>
-          <Board squares={squares} onClick={handleClick} />
-          <div>
+          <div className="board">
+            <Board squares={squares} onClick={handleClick} />
+          </div>
+          <div className="gameInfo">
             {winner ? (winner === 'Draw' ? "It's a draw!" : `${winner} wins!`) : `${isXNext ? 'Player X' : 'Player O'}'s turn`}
           </div>
-          <div>Player Score: {playerScore}</div>
-          <div>Consecutive Wins: {consecutiveWins}</div>
-          <button onClick={handleReset}>Restart</button>
-          <button onClick={handleContinue}>Continue</button>
+          <div className="score">Player Score: {playerScore}</div>
+          <div className="score">Consecutive Wins: {consecutiveWins}</div>
+          <button className="restartButton" onClick={handleReset}>Restart</button>
+          <button className="continueButton" onClick={handleContinue}>Continue</button>
         </div>
       )}
     </div>
