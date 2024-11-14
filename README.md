@@ -10,6 +10,9 @@
 node -v
 npm -v
 ```
+2. ดาวน์โหลดโปรเจกต์
+ดาวน์โหลดไฟล์โปรเจกต์ได้จาก https://github.com/ZamPotter/tic-tac-toe-game.git
+แตกไฟล์และเก็บไว้ในโฟลเดอร์ที่คุณต้องการ
 
 First, run the development server:
 
