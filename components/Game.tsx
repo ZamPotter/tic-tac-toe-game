@@ -1,9 +1,12 @@
 // components/Game.tsx
 'use client'
 import React, { useState, useEffect } from 'react';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { useRouter } from 'next/navigation';
 import '@/components/Game.scss';
 import Board from '@/components/Board';
 
+// คำนวณผลชนะ
 const calculateWinner = (squares: string[]): string | null => {
   const lines = [
     [0, 1, 2],
@@ -34,25 +37,26 @@ const calculateWinner = (squares: string[]): string | null => {
 type Difficulty = 'easy' | 'medium' | 'hard';
 
 const Game: React.FC = () => {
+  const { user, isLoading } = useUser(); // ใช้ useUser เพื่อเช็คสถานะการล็อกอิน
+  const router = useRouter();
   const [squares, setSquares] = useState(Array(9).fill(''));
-  const [isXNext, setIsXNext] = useState(true); // Player X starts
-  const [isGameOver, setIsGameOver] = useState(false); // To track game over status
-  const [difficulty, setDifficulty] = useState<Difficulty>('medium'); // Default difficulty is medium
-  const [playerScore, setPlayerScore] = useState(0); // To track the player's score
-  const [consecutiveWins, setConsecutiveWins] = useState(0); // Track consecutive wins
-  const [isGameStarted, setIsGameStarted] = useState(false); // Track if game is started
+  const [isXNext, setIsXNext] = useState(true);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [playerScore, setPlayerScore] = useState(0);
+  const [consecutiveWins, setConsecutiveWins] = useState(0);
+  const [isGameStarted, setIsGameStarted] = useState(false);
   const winner = calculateWinner(squares);
 
-  // Use effect to let AI play when it's AI's turn or when difficulty changes
+  // ใช้ useEffect เพื่อให้มั่นใจว่าไม่มีการเรียก setState ในระหว่าง render
   useEffect(() => {
     if (!isXNext && !isGameOver) {
-      aiMove(); // AI will play only when it's its turn (isXNext = false) and the game is not over
+      aiMove();
     }
-  }, [isXNext, squares, isGameOver, difficulty]); // Add difficulty to dependencies
+  }, [isXNext, squares, isGameOver, difficulty]);
 
   const handleClick = (index: number) => {
-    if (squares[index] || isGameOver) return; // Don't allow click if game is over or the square is already filled
-
+    if (squares[index] || isGameOver) return;
     const newSquares = squares.slice();
     newSquares[index] = isXNext ? 'X' : 'O';
     setSquares(newSquares);
@@ -60,13 +64,12 @@ const Game: React.FC = () => {
   };
 
   const handleReset = () => {
-    // Reset the game and go back to the start screen
     setSquares(Array(9).fill(''));
     setIsXNext(true);
     setIsGameOver(false);
-    setPlayerScore(0); // Reset score on restart
-    setConsecutiveWins(0); // Reset consecutive wins
-    setIsGameStarted(false); // Go back to the start screen
+    setPlayerScore(0);
+    setConsecutiveWins(0);
+    setIsGameStarted(false);
   };
 
   const handleContinue = () => {
@@ -75,110 +78,100 @@ const Game: React.FC = () => {
     setIsGameOver(false);
   };
 
+  const handleStartGame = (selectedDifficulty: Difficulty) => {
+    if (!user) {
+      // ถ้าผู้ใช้ยังไม่ล็อกอิน นำไปที่หน้า Auth0 Login
+      router.push('/api/auth/login');
+    } else {
+      // ถ้าล็อกอินแล้ว ให้เริ่มเกมได้
+      setDifficulty(selectedDifficulty);
+      setIsGameStarted(true);
+    }
+  };
+
   const aiMove = () => {
-    if (isGameOver) return; // Prevent AI move if the game is over
-
-    // AI plays only if it's the AI's turn and game is not over
+    if (isGameOver) return;
     const emptySquares = squares.map((value, index) => value === '' ? index : -1).filter(index => index !== -1);
-
-    if (emptySquares.length === 0) return; // Don't make move if no empty squares left
-
+    if (emptySquares.length === 0) return;
     let bestMove: number;
-    console.log(difficulty);
     switch (difficulty) {
       case 'easy':
         bestMove = easyAiMove(emptySquares);
         break;
       case 'medium':
-        bestMove = minimax(squares, emptySquares, 0, false, 3); // Depth 3 for medium
+        bestMove = minimax(squares, emptySquares, 0, false, 3);
         break;
       case 'hard':
-        bestMove = minimax(squares, emptySquares, 0, false, 9); // Depth 9 for hard
+        bestMove = minimax(squares, emptySquares, 0, false, 9);
         break;
     }
-
     const newSquares = squares.slice();
     newSquares[bestMove] = 'O';
     setSquares(newSquares);
-    setIsXNext(true); // Switch to Player X after AI move
+    setIsXNext(true);
   };
 
-  // Easy AI - Random move
   const easyAiMove = (emptySquares: number[]): number => {
     const randomIndex = Math.floor(Math.random() * emptySquares.length);
     return emptySquares[randomIndex];
   };
 
-  // Minimax algorithm with depth limit
   const minimax = (board: string[], availableMoves: number[], depth: number, isMaximizingPlayer: boolean, maxDepth: number): number => {
     const winner = calculateWinner(board);
-    if (winner === 'X') return -10 + depth; // Player X wins
-    if (winner === 'O') return 10 - depth; // AI (O) wins
-    if (availableMoves.length === 0 || depth === maxDepth) return 0; // Draw or max depth reached
-
+    if (winner === 'X') return -10 + depth;
+    if (winner === 'O') return 10 - depth;
+    if (availableMoves.length === 0 || depth === maxDepth) return 0;
     let bestScore = isMaximizingPlayer ? -Infinity : Infinity;
     let bestMove = -1;
-
     for (let i = 0; i < availableMoves.length; i++) {
       const move = availableMoves[i];
       const newBoard = board.slice();
-      newBoard[move] = isMaximizingPlayer ? 'O' : 'X'; // Make the move
+      newBoard[move] = isMaximizingPlayer ? 'O' : 'X';
       const newAvailableMoves = availableMoves.filter(m => m !== move);
       const score = minimax(newBoard, newAvailableMoves, depth + 1, !isMaximizingPlayer, maxDepth);
-
-      if (isMaximizingPlayer) {
-        if (score > bestScore) {
-          bestScore = score;
-          bestMove = move;
-        }
-      } else {
-        if (score < bestScore) {
-          bestScore = score;
-          bestMove = move;
-        }
+      if (isMaximizingPlayer ? score > bestScore : score < bestScore) {
+        bestScore = score;
+        bestMove = move;
       }
     }
-
     return bestMove;
   };
 
   useEffect(() => {
-    // Set game over status when there is a winner or a draw
     if (winner || winner === 'Draw') {
       setIsGameOver(true);
       updateScore(winner);
     }
   }, [winner]);
 
-  // Update score based on the game result
   const updateScore = (result: string | null) => {
     if (result === 'X') {
-      setPlayerScore(prevScore => Math.max(prevScore + 1, 0)); // Player X wins
-      setConsecutiveWins(prev => prev + 1); // Increase consecutive wins count
+      setPlayerScore(prevScore => Math.max(prevScore + 1, 0));
+      setConsecutiveWins(prev => prev + 1);
     } else if (result === 'O') {
-      setPlayerScore(prevScore => Math.max(prevScore - 1, 0)); // Player O (AI) wins
-      setConsecutiveWins(0); // Reset consecutive wins for AI loss
+      setPlayerScore(prevScore => Math.max(prevScore - 1, 0));
+      setConsecutiveWins(0);
     } else if (result === 'Draw') {
-      setPlayerScore(prevScore => Math.max(prevScore, 0)); // Draw
-      setConsecutiveWins(0); // Reset consecutive wins if it's a draw
+      setPlayerScore(prevScore => Math.max(prevScore, 0));
+      setConsecutiveWins(0);
     }
-
-    // Add bonus point for 3 consecutive wins
     if (consecutiveWins === 2) {
-      setPlayerScore(prevScore => prevScore + 1); // Reward with an extra point
-      setConsecutiveWins(0); // Reset consecutive wins count
+      setPlayerScore(prevScore => prevScore + 1);
+      setConsecutiveWins(0);
     }
   };
 
-  const handleStartGame = (selectedDifficulty: Difficulty) => {
-    setDifficulty(selectedDifficulty);
-    setIsGameStarted(true); // Game is started, so show game board
-  };
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="container">
       {!isGameStarted ? (
         <div>
+          {user ? (
+            <a href="/api/auth/logout">Logout</a>
+          ) : (
+            <a href="/api/auth/login">Login</a>
+          )}
           <h2 className="title">Welcome to Tic-Tac-Toe</h2>
           <div className="difficultySelection">
             <label>
