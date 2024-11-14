@@ -1,6 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Getting Started
+
+คู่มือการติดตั้งและรันโปรเจกต์ Next.js
+1. ติดตั้ง Node.js และ npm
+โปรเจกต์ Next.js ต้องการ Node.js และ npm (Node Package Manager) ในการติดตั้งและรันโปรเจกต์ คุณสามารถดาวน์โหลดและติดตั้ง Node.js ได้จาก [เว็บไซต์ Node.js.](https://nodejs.org/en)
+
+หลังจากติดตั้งแล้ว คุณสามารถตรวจสอบเวอร์ชันของ Node.js และ npm ด้วยคำสั่ง:
+
+```node -v
+npm -v
+```
 
 First, run the development server:
 
